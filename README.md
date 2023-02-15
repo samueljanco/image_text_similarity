@@ -43,6 +43,21 @@ Architektúra:
 - MaxPooling vrstva (2x2 pooling)
 
 
+### Vnorenie slov (word embedding)
+
+Vektory sú generované pomocou Universal Sentence Encoder.
+Model USE je postavený na architektúre Transformer a používa multi-head self-attention ako hlavný mechanismus na získavanie informácií z danej vety.
+Multi-head self-attention umožňuje modelu vyhľadávať informácie z celej vety v rovnakom čase a zohľadniť tieto informácie pri určovaní vektora reprezentujúceho danú vetu.
+USE tiež využíva techniku pre-trainingu na veľkých korpusoch textov, čo mu umožňuje získať širšie pochopenie jazyka a jeho kontextu.
+Výsledkom je vektorová reprezentácia, ktorá zachováva významové vlastnosti daného textu.
+Následne je tréning modelu ešte doladení na menšom korpuse zostavenom s popiov obrázkov v datasete MS-COCO. 
+
+Word embeddings majú viacero výhod oproti iným technikám na reprezentáciu slov, ako napríklad one-hot encoding alebo bag-of-words modely.
+Word embeddings používajú tzv. husté (dense) vektory, čo znamená, že zachytávajú viac informácií v menšom počte dimenzií.
+Taktiež, môžu zachytiť sémantické vzťahy medzi slovami, čo je užitočné pre porovnávanie s obrázkami.
+
+
+
 
 
 
