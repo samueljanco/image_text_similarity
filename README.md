@@ -4,6 +4,19 @@
 
 ## Uživateľský manuál
 
+Aplikácia má veľmi jednoduché uživateľské rozhranie a ľahko sa používa.
+Po spustení sa užívateľovi zobrazí UI pozostávajúce z troch častí.
+V ľavej časť okna sa nachádza textové poľe, do ktorého uživateľ zadáva vstupný text.
+Text je možné odsadzovať, členiť do odsekov a inak upravovať pomocou whitespacov.
+Pravá strana je vyhradená pre vloženie vstupného obrázku.
+Pokiaľ nie je zvolený žiaden obrázok, uživateľovi je zobrazované tlačidlo s ikonkou.
+Po kliknutí na tlačidlo sa otvorí aplikácia na prezeranie súborov, pomocou ktorej užívateľ môže svoj obrázok vybrať.
+Aktuálne zvolený obrázok sa zobrazuje na pravej strane okna namiesto tlačidla pre výber obrázkov.
+To je teraz posunuté pod obrázok a jeho stlačením môže užívateľ zmeniť svoju voľbu vstupného obrázku.
+V spondej časti okna sa nachádza tlačidlo s nápisom "Compare", ktoré spustí proces porovnávania zadaného textu a obrázku.
+Po vyhodnotení podobnosti sa používateľovi zobrazí menšie okno s výsledkom uvedením v percentách.
+V pravom hornom rohu menšieho okna bude ikonka "X" pomocou, ktorej je možné okno zavrieť a začať porovnávať novú dvojicu.   
+
 ## Model 
 
 ### Generovanie obrazových rysov
