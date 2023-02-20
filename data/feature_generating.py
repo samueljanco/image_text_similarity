@@ -2,6 +2,7 @@ import csv
 import json
 import numpy as np
 from image_features import  ImageEncoder
+from text_features import TextEncoder
 
 def save_image_features():
     cc_file = np.array(list(csv.reader(
