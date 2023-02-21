@@ -15,7 +15,20 @@ Aktuálne zvolený obrázok sa zobrazuje na pravej strane okna namiesto tlačidl
 To je teraz posunuté pod obrázok a jeho stlačením môže užívateľ zmeniť svoju voľbu vstupného obrázku.
 V spondej časti okna sa nachádza tlačidlo s nápisom "Compare", ktoré spustí proces porovnávania zadaného textu a obrázku.
 Po vyhodnotení podobnosti sa používateľovi zobrazí menšie okno s výsledkom uvedením v percentách.
-V pravom hornom rohu menšieho okna bude ikonka "X" pomocou, ktorej je možné okno zavrieť a začať porovnávať novú dvojicu.   
+V pravom hornom rohu menšieho okna bude ikonka "X" pomocou, ktorej je možné okno zavrieť a začať porovnávať novú dvojicu.
+
+## Dataset
+
+Model je trénovaný na datasete MS-COCO a jeho rozšírení o skóre sémantickej podobnosti Crisscrossed Captions (CxC).
+
+MS COCO (Microsoft Common Objects in Context) bsahuje obrázky a príslušné anotácie.
+Tento dataset je navrhnutý tak, aby slúžil na trénovanie a testovanie algoritmov strojového učenia na úlohy ako detekcia objektov, segmentácia obrázkov a generovanie popisov obrázkov.
+MS COCO obsahuje viac ako 300 tisíc obrázkov s viac ako 2,5 miliónmi anotácií, ktoré zahrňujú popisy objektov, ich polohy a iné atribúty.
+Obrázky v tomto datasete obsahujú rôzne typy scén, ako napríklad interiéry, exteriéry a mestské scenérie.
+Dataset je veľký a rozmanitý, čo z neho robí užitočný nástroj pre výskum a vývoj.
+
+CxC dataset obsahuje takmer 250-tisíc anotácii obsahujúce pozitívne a negatívne associácie medzi pármi dvoch obrázkov, dvoch popisov alebo obrázku a poipisu.
+Práve tieto anotácie umožnujú modelu dosahovať lepšie výsledky.  
 
 ## Model 
 
