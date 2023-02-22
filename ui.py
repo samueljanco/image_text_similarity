@@ -1,16 +1,17 @@
 import sys
-
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QPushButton, \
-    QFileDialog, QTextEdit
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, \
+    QFileDialog, QTextEdit, QMessageBox
 from PyQt5.QtGui import QPixmap
+#from similarity_score import SimilarityScore
 
 class MyWidget(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.input_text = ""
-        self.input_image_path = ""
+        self.image_path = ""
+
+        #self.similarity_score = SimilarityScore()
 
         # Create a textfield
         self.textfield = QTextEdit(self)
@@ -24,7 +25,8 @@ class MyWidget(QWidget):
         self.image_button.clicked.connect(self.select_image)
 
         # Create a button
-        self.button = QPushButton('Button', self)
+        self.compere_button = QPushButton('Compare', self)
+        self.compere_button.clicked.connect(self.compere)
 
         # Set up the layout
         layout = QVBoxLayout(self)
@@ -35,7 +37,7 @@ class MyWidget(QWidget):
         v_layout.addWidget(self.image_button)
         h_layout.addLayout(v_layout)
         layout.addLayout(h_layout)
-        layout.addWidget(self.button)
+        layout.addWidget(self.compere_button)
 
     def select_image(self):
         options = QFileDialog.Options()
@@ -44,8 +46,18 @@ class MyWidget(QWidget):
         if file_name:
             pixmap = QPixmap(file_name)
             self.image_label.setPixmap(pixmap)
-            self.input_image_path = file_name
+            self.image_path = file_name
+            print("Selected")
 
+    def compere(self):
+        plain_text = self.textfield.toPlainText()
+        text = plain_text.replace('\n', ' ').replace('\r', '')
+        if len(text) > 0 and len(self.image_path) > 0:
+            #score = self.similarity_score.predict(self.image_path, text)
+            self.popUpEvent(78)
+
+    def popUpEvent(self, score):
+        QMessageBox.information(self, 'Result', 'The image-text pair similarity is '+str(score)+' %', QMessageBox.Ok)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
