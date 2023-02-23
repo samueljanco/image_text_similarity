@@ -84,3 +84,15 @@ Taktiež, môžu zachytiť sémantické vzťahy medzi slovami, čo je užitočn�
 
 
 ## Implementácia
+
+
+### ImageEncoder
+
+Trieda ImageEncoder používa predtrénovaný model VGG16 na extrakciu rysov z vstupných obrázkov.
+Pri inicializácií trieda načíta model VGG16 predtrénovaný na datasete ImageNet a vytvorí nový model typu Sequential, ktorý sa skladá zo všetkých vrstiev s výnimkou poslednej klasifikačnej vrstvy.
+Tento nový model sa potom uloží ako atribút triedy z názvom "model".
+
+Metóda "encode" prijíma zoznam vstupných obrázkov, načíta každý obrázok pomocou metódy load_img z Keras, zmenší ho na (224, 224) a prevedie na numpy pole.
+Numpy pole sa potom predspracuje pomocou funkcie preprocess_input modelu VGG16 a predá sa do predtrénovaného modelu VGG16 na extrakciu rysov.
+Extrahované rysy sa potom preformátujú a uložia sa do zoznamu.
+Napokon, metóda vráti numpy pole všetkých extrahovaných rysov z vstupných obrázkov.
