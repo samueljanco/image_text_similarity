@@ -1,6 +1,7 @@
 import keras.models
+from tensorflow import keras
 from tensorflow.keras import Input, Model
-from tensorflow.keras.layers import Dense, Concatenate
+from tensorflow.keras.layers import Dense
 from image_features import ImageEncoder
 from text_features import TextEncoder
 
@@ -11,16 +12,17 @@ class SimilarityScore:
 
         x1 = Dense(64, activation='relu')(image_input)
         x2 = Dense(64, activation='relu')(text_input)
-        x = Concatenate()([x1, x2])
-        output = Dense(1, activation='sigmoid')(x)
+        x = keras.layers.multiply([x1, x2])
+        x = keras.layers.Dense(32, activation='relu')(x)
+        outputs = keras.layers.Dense(1, activation='linear')(x)
 
-        self.model = Model(inputs=[image_input, text_input], outputs=output)
+        self.model = Model(inputs=[image_input, text_input], outputs=outputs)
         self.model.compile(optimizer='adam', loss='mean_squared_error')
         self.image_encoder = ImageEncoder()
         self.text_encoder = TextEncoder()
 
     def fit(self, image_features, text_features, target):
-        self.model.fit([image_features, text_features], target, epochs=10, batch_size=32)
+        self.model.fit([image_features, text_features], target, epochs=50, batch_size=32)
 
     def predict_from_features(self, image_feature, text_feature):
         return self.model.predict([image_feature, text_feature])
