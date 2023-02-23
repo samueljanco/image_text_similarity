@@ -8,10 +8,7 @@ class ImageEncoder:
         base_model = VGG16(weights='imagenet')
         self.model = tf.keras.models.Sequential(base_model.layers[:-1])
 
-    def encode(self, image):
-        return self._encode_pretrained(image)
-
-    def _encode_pretrained(self, images):
+    def encode(self, images):
         features = []
         i = 1
         for image in images:
