@@ -6,13 +6,24 @@ from image_features import ImageEncoder
 from text_features import TextEncoder
 
 class SimilarityScore:
-    def __init__(self):
+    def __init__(self, combine_via='multiplication'):
         image_input = Input(shape=(4096,))
         text_input = Input(shape=(512,))
 
-        x1 = Dense(64, activation='relu')(image_input)
-        x2 = Dense(64, activation='relu')(text_input)
-        x = keras.layers.multiply([x1, x2])
+        if combine_via == 'multiplication':
+            x1 = Dense(64, activation='relu')(image_input)
+            x2 = Dense(64, activation='relu')(text_input)
+            x = keras.layers.multiply([x1, x2])
+        elif combine_via == 'shared_layer':
+            shared_dense_layer = keras.layers.Dense(64, activation='relu')
+            x_1 = shared_dense_layer(image_input)
+            x_2 = shared_dense_layer(text_input)
+            x = keras.layers.concatenate([x_1, x_2])
+        else:
+            x_1 = keras.layers.Dense(64, activation='relu')(image_input)
+            x_2 = keras.layers.Dense(64, activation='relu')(text_input)
+            x = keras.layers.concatenate([x_1, x_2])
+
         x = keras.layers.Dense(32, activation='relu')(x)
         outputs = keras.layers.Dense(1, activation='linear')(x)
 
