@@ -3,7 +3,11 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, \
     QFileDialog, QTextEdit, QMessageBox
 from PyQt5.QtGui import QPixmap
-#from similarity_score import SimilarityScore
+
+import keras.models
+from image_features import ImageEncoder
+from text_features import TextEncoder
+import numpy as np
 
 class MyWidget(QWidget):
     def __init__(self):
@@ -11,7 +15,10 @@ class MyWidget(QWidget):
 
         self.image_path = ""
 
-        #self.similarity_score = SimilarityScore()
+        self.text_enc = TextEncoder()
+        self.image_enc = ImageEncoder()
+        self.model = keras.models.load_model('similarity_model_2')
+
 
         # Create a textfield
         self.textfield = QTextEdit(self)
@@ -53,8 +60,11 @@ class MyWidget(QWidget):
         plain_text = self.textfield.toPlainText()
         text = plain_text.replace('\n', ' ').replace('\r', '')
         if len(text) > 0 and len(self.image_path) > 0:
-            #score = self.similarity_score.predict(self.image_path, text)
-            self.popUpEvent(78)
+
+            text_features = np.array(self.text_enc.encode([text]))
+            image_features = np.array(self.image_enc.encode([self.image_path]))
+            score = self.model.predict([image_features[0].reshape(1,-1), text_features[0].reshape(1,-1)])
+            self.popUpEvent(score)
 
     def popUpEvent(self, score):
         QMessageBox.information(self, 'Result', 'The image-text pair similarity is '+str(score)+' %', QMessageBox.Ok)
