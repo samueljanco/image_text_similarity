@@ -107,8 +107,7 @@ Trieda je užitočná pre ďalšie triedy, ktoré potrebujú zakódovať obrazov
 ### TextEncoder
 
 Trieda TextEncoder sa používa na zakódovanie textových rysov pomocou pretrénovanej neurónovej siete.
-Táto trieda knižnicu tensorflow_hub na načítanie predtrénovanej neurónovej siete.
-Pri vytvorení inštancie triedy TextEncoder sa načíta model neurónovej siete pomocou metódy hub.load z modulu Universal Sentence Encoder vo verzii 4 od spoločnosti Google.
+Pri vytvorení inštancie triedy TextEncoder sa pomocou metódy hub.load načíta model Universal Sentence Encoder vo verzii 4 od spoločnosti Google.
 Metóda encode prijíma ako argument zoznam textových vstupov, ktoré pomocou modelu zakóduje a vráti ich ako numpy pole.
 Trieda je užitočná pre ďalšie triedy, ktoré potrebujú zakódovať textové vstupy do vektorového priestoru pre ďalšie spracovanie, ako napríklad trieda SimilarityScore.
 
