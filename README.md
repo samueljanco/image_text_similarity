@@ -28,7 +28,12 @@ Obrázky v tomto datasete obsahujú rôzne typy scén, ako napríklad interiéry
 Dataset je veľký a rozmanitý, čo z neho robí užitočný nástroj pre výskum a vývoj.
 
 CxC dataset obsahuje takmer 250-tisíc anotácii obsahujúce pozitívne a negatívne associácie medzi pármi dvoch obrázkov, dvoch popisov alebo obrázku a poipisu.
-Práve tieto anotácie umožnujú modelu dosahovať lepšie výsledky.  
+Práve tieto anotácie umožnujú modelu dosahovať lepšie výsledky.
+
+Pri trénovaní modelu je použitá iba "SITS" (semantic image-text similarity) časť dátasetu, ktorá obsahuje približne 88 tisíc (44000 v sits_val a 44000 v sits_test) párov obrázkov a textov s mierou podobnosti v rozsahu od 0 do 5.
+Model je trénovaný na približne 80 tisíc z týchto párov.
+Zvyšok dát je použitý na následnú evaluáciu. 
+
 
 ## Model 
 
@@ -82,9 +87,9 @@ Word embeddings majú viacero výhod oproti iným technikám na reprezentáciu s
 Word embeddings používajú tzv. husté (dense) vektory, čo znamená, že zachytávajú viac informácií v menšom počte dimenzií.
 Taktiež, môžu zachytiť sémantické vzťahy medzi slovami, čo je užitočné pre porovnávanie s obrázkami.
 
+### Predikovanie podobnosti
 
 ## Implementácia
-
 
 ### ImageEncoder
 
@@ -95,4 +100,29 @@ Tento nový model sa potom uloží ako atribút triedy z názvom "model".
 Metóda "encode" prijíma zoznam vstupných obrázkov, načíta každý obrázok pomocou metódy load_img z Keras, zmenší ho na (224, 224) a prevedie na numpy pole.
 Numpy pole sa potom predspracuje pomocou funkcie preprocess_input modelu VGG16 a predá sa do predtrénovaného modelu VGG16 na extrakciu rysov.
 Extrahované rysy sa potom preformátujú a uložia sa do zoznamu.
-Napokon, metóda vráti numpy pole všetkých extrahovaných rysov z vstupných obrázkov.
+Nakoniec, metóda vráti numpy pole všetkých extrahovaných rysov zo vstupných obrázkov.
+Trieda je užitočná pre ďalšie triedy, ktoré potrebujú zakódovať obrazové vstupy do vektorového priestoru pre ďalšie spracovanie, ako napríklad trieda SimilarityScore.
+
+
+### TextEncoder
+
+Trieda TextEncoder sa používa na zakódovanie textových rysov pomocou pretrénovanej neurónovej siete.
+Táto trieda knižnicu tensorflow_hub na načítanie predtrénovanej neurónovej siete.
+Pri vytvorení inštancie triedy TextEncoder sa načíta model neurónovej siete pomocou metódy hub.load z modulu Universal Sentence Encoder vo verzii 4 od spoločnosti Google.
+Metóda encode prijíma ako argument zoznam textových vstupov, ktoré pomocou modelu zakóduje a vráti ich ako numpy pole.
+Trieda je užitočná pre ďalšie triedy, ktoré potrebujú zakódovať textové vstupy do vektorového priestoru pre ďalšie spracovanie, ako napríklad trieda SimilarityScore.
+
+### SimilarityScore
+
+Trieda SimilarityScore vykonáva predikciu podobnosti medzi vstupným obrázkom a textom.
+Využíva natrénovaný model a  triedy ImageEncoder a TextEncoder na kódovanie obrazových a textových rysov.
+Pri vytvorení inštancie triedy SimilarityScore sa načíta predtrénovaný model podobnosti pomocou metódy keras.models.load_model zo súboru určeneného premennou model_path a inicializuje tridy ImageEncoder a TextEncoder.
+Trieda tiež nastavuje hodnotu MAX na 5 (maximálne skóre), ktorá sa neskôr používa na výpočet podobnosti ako percentuálnej hodnoty.
+Metóda predict prijíma ako argumenty cestu k súboru s obrázkom a textový vstup, zakóduje rysy obrázku a textu pomocou tried ImageEncoder a TextEncoder a predikuje podobnosť medzi nimi pomocou načítaného similarity_modelu.
+Metóda vráti hodnotu podobnosti ako hodnotu typu float v rozsahu od 0 do self.MAX.
+Metóda preprocess_text je pomocná metóda, ktorá predspracuje textový vstup tým, že nahrádza znaky nového riadku medzerami.
+Metóda get_percentage je pomocná metóda, ktorá berie skóre ako argument a vypočíta percentuálnu hodnotu podobnosti pomocou hodnoty MAX.
+Metóda compare je hlavnou metódou triedy, ktorá berie ako argumenty cestu k súboru s obrázkom a textový vstup. Predspracuje textový vstup pomocou preprocess_text, predikuje skóre podobnosti pomocou predict a potom vypočíta percentuálnu podobnosť pomocou get_percentage.
+Metóda vráti percentuálnu hodnotu podobnosti ako hodnotu typu float.
+
+
