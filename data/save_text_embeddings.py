@@ -6,9 +6,9 @@ from text_features import TextEncoder
 import json
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--caption_file", default='', type=str, help="Caption file") #"C:/Users/samoj/Downloads/dataset_coco.json/dataset_coco.json"
-parser.add_argument("--cxc_file", default='', type=str, help="CxC file") #"C:/Users/samoj/Downloads/Crisscrossed-Captions-master/Crisscrossed-Captions-master/data/sits_val.csv"
-parser.add_argument("--output", default='', type=str, help="Output file")
+parser.add_argument("--caption_file", default='D:/dataset_coco.json/dataset_coco.json', type=str, help="Caption file") 
+parser.add_argument("--cxc_file", default='D:/Crisscrossed-Captions-master/Crisscrossed-Captions-master/data/sits_test.csv', type=str, help="CxC file")
+parser.add_argument("--output", default='t_text_embeddings.npy', type=str, help="Output file")
 
 
 def main(args):
