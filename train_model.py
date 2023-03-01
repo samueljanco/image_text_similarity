@@ -15,7 +15,7 @@ parser.add_argument("--v_cxc_file", default='D:/Crisscrossed-Captions-master/Cri
 parser.add_argument("--t_image_file", default='t_image_features.npy', type=str, help="Images path")
 parser.add_argument("--t_text_file", default='t_text_embeddings.npy', type=str, help="Texts path")
 parser.add_argument("--t_cxc_file", default='D:/Crisscrossed-Captions-master/Crisscrossed-Captions-master/data/sits_test.csv', type=str, help="CxC file")
-parser.add_argument("--output", default='similarity_model_1', type=str, help="Output file")
+parser.add_argument("--output", default='similarity_model', type=str, help="Output file")
 
 
 def transform_to_dictionary(arr):
