@@ -1,4 +1,4 @@
-# image_text_similarity
+# Image-Text Similarity
 
 ## Inštalácia
 
@@ -87,7 +87,15 @@ Word embeddings majú viacero výhod oproti iným technikám na reprezentáciu s
 Word embeddings používajú tzv. husté (dense) vektory, čo znamená, že zachytávajú viac informácií v menšom počte dimenzií.
 Taktiež, môžu zachytiť sémantické vzťahy medzi slovami, čo je užitočné pre porovnávanie s obrázkami.
 
-### Predikovanie podobnosti
+### Predikcia podobnosti
+
+Model na predikciu podobnosti zakódovaných obrázkov a textov je neurónová sieť navrhnutá pomocou knižnice TensorFlow/Keras.
+Tento model má dva vstupy, jeden vstup pre vektor obrazových rysov (4096 dimenzií) a druhý pre vektorovú reperezentáciu textu (512 dimenzií).
+Pre oba vstupy nasledujú Dense vrstvy s ReLU aktiváciou.
+Po Dense vrstvách sú výstupy spojené pomocou operácie násobenia (element-wise multiplication) v capstone vrstve multipy.
+Tieto výstupy sú ďalej spracované pomocou ďalšej vrstvy Dense a výstup z tejto vrstvy je následne odoslaný do poslednej vrstvy s jedným výstupom a lineárnou aktiváciou.
+Celý model je nakoniec zostrojený pomocou triedy Model z Kerasu, ktorá využíva funkcionálne API a je skompilovaný s Adam optimizérom a stratovou funkciou Mean Squared Error.
+
 
 ## Implementácia
 
@@ -123,5 +131,64 @@ Metóda preprocess_text je pomocná metóda, ktorá predspracuje textový vstup 
 Metóda get_percentage je pomocná metóda, ktorá berie skóre ako argument a vypočíta percentuálnu hodnotu podobnosti pomocou hodnoty MAX.
 Metóda compare je hlavnou metódou triedy, ktorá berie ako argumenty cestu k súboru s obrázkom a textový vstup. Predspracuje textový vstup pomocou preprocess_text, predikuje skóre podobnosti pomocou predict a potom vypočíta percentuálnu podobnosť pomocou get_percentage.
 Metóda vráti percentuálnu hodnotu podobnosti ako hodnotu typu float.
+
+### train_model a test_model
+
+Tieto scripty slúžia na tréning a evaluáciu modelu, ktorý predikuje podobnosť medzi obrazovými a textovými rysmi.
+
+**transform_to_dictionary(arr)**
+
+Funkcia berie ako vstup 2D numpy pole, v ktorom prvý stĺpec obsahuje kľúče a zvyšné obsahujú hodnoty.
+Následne toto poľe transformuje na slovník, kde sa každý riadok stane jednou jeho položkou.
+
+**prepare_data(image_file, text_file, cxc_file)**
+
+Funkcia na vstupe dostne cesty k súborom image_file, text_file a cxc_file.
+Premenná image_file a text_file sú súbory typu NumPy obsahujúce rysy obrazu a textu.
+cxc_file je súbor typu CSV obsahujúci riadky identifikátorov obrazov a textu, ako aj skóre podobnosti.
+Funkcia najprv načíta rysz obrázkov a textov z ich súborov, a potom ich pomocou funkcie transform_to_dictionary transformuje na slovníky.
+Potom načíta CSV súbor a pridáva rysy obrázkov, rysy textov a ich cieľové skóre zodpovedajúce identifikátorom v cxc súbore do zoznamov.
+Nakoniec funkcia vráti zoznami ako polia NumPy.
+
+
+**[train] build_model()**
+
+Funkcia zostrojí a skompiluje model ktorý sa bude trénovať. 
+
+
+**[train] main(args)**
+
+Funkcia najskôr zavolá prepare_data() na dve množiny dát (sits_val.csv a sits_test.csv).
+Následne oba páry trojíc (obrázky, texty, targety) vygeneruje náhodnú permutáciu a dáta zpermutuje.
+Z druhej trojice vynechá posledných arg.test_size príkladov, ktoré budú použité pri testovaní.
+Trénovacie dáta spojí pomocou funcie np.concatenate() a natrénuje na nich model postavený pomocou funcie build_model().
+Nakoniec model uloži pod názvom arg.output.
+
+**[test] main(args)**
+Funkcia najskôr zavolá prepare_data() na dáta zo sits_test.csv.
+Následne vygeneruje rovnaké permutácie ako pri trénovaní a pomocou nic poprehaduje poradie príkladov.
+Nakoniec vyberie posledných args.test_size príkladov (obrázky, texty, targety) a otestuje na nich model zadaný v args.model.
+
+
+### GUI
+
+Trieda App definuje grafické užívateľské rozhranie (GUI) pomocou knižnice PyQt5.
+Rozhranie umožňuje používateľom porovnať podobnosť medzi obrázkom a textom zobrazením percentuálneho ohodnotenia podobnosti.
+
+Trieda App dedí od triedy QWidget, ktorá je základnou triedou pre všetky prvky užívateľského rozhrania v PyQt5. 
+Pri inicializácií trieda vytvorí premennú udržiavajúcu cestu k obrázku a inštanciu triedy SimilarityScore.
+
+Trieda tiež vytvára textové pole, tlačidlo "Select Image", pole pre obrázok a tlačidlo na spustenie porovnania("Compare"). Tlačidlo "Select Image" otvára dialógové okno zobrazujúce súbory, ktoré umožňuje používateľom vybrať obrázok.
+Tlačidlo "Compere" spúšťa metódu compare, ktorá získava text z textového poľa a porovnáva ho so zvoleným obrázkom pomocou objektu SimilarityScore. Ak sú zadané text aj obrázok, zobrazí sa ako vyskakovacie okno s výslednou podobnosťou.
+
+Metóda "popUpEvent" používa triedu "QMessageBox" na vytvorenie vyskakovacieho okna, ktoré zobrazuje výsledok ako informačnú správu.
+Správa obsahuje tlačidlo "OK" na zatvorenie správy.
+
+
+
+
+
+
+
 
 
