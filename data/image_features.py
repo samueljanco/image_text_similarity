@@ -10,7 +10,6 @@ class ImageEncoder:
 
     def encode(self, images):
         features = []
-        i = 1
         for image in images:
             img = tf.keras.preprocessing.image.load_img(image, color_mode='rgb', target_size=(224, 224))
             x = tf.keras.preprocessing.image.img_to_array(img)
@@ -18,7 +17,5 @@ class ImageEncoder:
             x = tf.keras.applications.vgg16.preprocess_input(x)
             f = self.model.predict(x)
             features.append(f.reshape(-1))
-            print(i)
-            i += 1
 
         return np.array(features)
