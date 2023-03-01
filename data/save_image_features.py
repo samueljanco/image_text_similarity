@@ -5,9 +5,9 @@ import numpy as np
 from image_features import ImageEncoder
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--image_path", default='', type=str, help="Image path") #"C:/Users/samoj/Downloads/val2014/val2014/"
-parser.add_argument("--cxc_file", default='', type=str, help="CxC file") #"C:/Users/samoj/Downloads/Crisscrossed-Captions-master/Crisscrossed-Captions-master/data/sits_val.csv"
-parser.add_argument("--output", default='', type=str, help="Output file")
+parser.add_argument("--image_path", default='D:/val2014/val2014/', type=str, help="Image path")
+parser.add_argument("--cxc_file", default='D:/Crisscrossed-Captions-master/Crisscrossed-Captions-master/data/sits_test.csv', type=str, help="CxC file")
+parser.add_argument("--output", default='t_image_features.npy', type=str, help="Output file")
 
 
 def main(args):
@@ -20,8 +20,9 @@ def main(args):
 
     image_encoder = ImageEncoder()
     image_features = np.array(image_encoder.encode(image_paths))
+    ids = np.array([float(i[13:-4]) for i in image_names])
 
-    image_features = np.column_stack((np.array(image_names), image_features))
+    image_features = np.column_stack((ids, image_features))
 
     with open(args.output, 'wb') as f:
         np.save(f, image_features)
