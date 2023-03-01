@@ -4,14 +4,12 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLay
 from PyQt5.QtGui import QPixmap
 from similarity_score import SimilarityScore
 
-class MyWidget(QWidget):
+class App(QWidget):
     def __init__(self):
         super().__init__()
 
         self.image_path = ""
-
         self.similarity_score = SimilarityScore()
-
 
         # Create a textfield
         self.textfield = QTextEdit(self)
@@ -60,7 +58,7 @@ class MyWidget(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    widget = MyWidget()
+    widget = App()
+    widget.setWindowTitle("Image-Text Similarity")
     widget.show()
     sys.exit(app.exec_())
-
