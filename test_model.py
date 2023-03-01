@@ -11,7 +11,7 @@ parser.add_argument("--v_size", default=44723, type=int, help="Val data size")
 parser.add_argument("--t_image_file", default='t_image_features.npy', type=str, help="Images path")
 parser.add_argument("--t_text_file", default='t_text_embeddings.npy', type=str, help="Texts path")
 parser.add_argument("--t_cxc_file", default='D:/Crisscrossed-Captions-master/Crisscrossed-Captions-master/data/sits_test.csv', type=str, help="CxC file")
-parser.add_argument("--model", default='similarity_model_1', type=str, help="Similarity model")
+parser.add_argument("--model", default='similarity_model', type=str, help="Similarity model")
 
 def transform_to_dictionary(arr):
     dict = {}
