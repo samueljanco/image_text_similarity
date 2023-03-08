@@ -1,0 +1,5 @@
+tensorflow
+tensorflow-hub
+PyQt5
+Pillow
+chardet
