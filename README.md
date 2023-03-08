@@ -2,6 +2,51 @@
 
 ## Inštalácia
 
+### Windows
+
+1. cx_Freeze
+Najsôr je potrebné nainštalovať si nástroj cx_Freeze.
+Do príkazovej riadky stačí zadať tento príkaz:
+```
+pip install cx_Freeze
+```
+2. Vytvorenie distribučného balíka
+Teraz môžete vytvoriť distribučný balík aplikácie.
+Otvorte príkazový riadok a prejdite do adresára projektu, kde sa nachádza súbor windows_setup.py.
+Zadajte nasledujúci príkaz:
+```
+python setup.py build
+```
+Tento príkaz vytvorí distribučný balík aplikácie v priečinku "build".
+
+3. Spustenie aplikácie
+Po úspešnom vytvorení distribučného balíka môžete spustiť aplikáciu.
+Prejdite do priečinka "build" a nájdite súbor s názvom "app".
+Pre spustenie aplikácie stačí dvakrát kliknúť na tento súbor.
+
+### MacOS
+
+1. py2app
+Najsôr je potrebné nainštalovať si nástroj py2app.
+Do príkazovej riadky stačí zadať tento príkaz:
+```
+pip install py2app
+```
+2. Vytvorenie distribučného balíka
+Teraz môžete vytvoriť distribučný balík aplikácie.
+Otvorte príkazový riadok a prejdite do adresára projektu, kde sa nachádza súbor macos_setup.py.
+Zadajte nasledujúci príkaz:
+```
+python setup.py py2app
+```
+Tento príkaz vytvorí distribučný balík aplikácie v priečinku "dist".
+
+3. Spustenie aplikácie
+Po úspešnom vytvorení distribučného balíka môžete spustiť aplikáciu.
+Prejdite do priečinka "dist" a nájdite súbor s názvom "app".
+Pre spustenie aplikácie stačí dvakrát kliknúť na tento súbor.
+
+
 ## Užívateľský manuál
 
 Aplikácia má veľmi jednoduché užívateľské rozhranie a ľahko sa používa.
