@@ -93,11 +93,15 @@ Model je trénovaný na približne 80 tisíc z týchto párov.
 Zvyšok dát je použitý na následné testovanie. 
 
 
-## Model 
+## Modely 
 
 ### Generovanie obrazových rysov
 
-Obrazové rysy sa zo vstupných obrázkov generujú pomocou modelu VGG16. Ide o konvolučnú neurónovú sieť, ktorá vznikla v roku 2014 pri súťaži ILSVR(ImageNet), no stále patrí medzi často používané modely.
+#### VGG16
+
+?? Obrazové rysy sa zo vstupných obrázkov generujú pomocou modelu VGG16.
+
+Ide o konvolučnú neurónovú sieť, ktorá vznikla v roku 2014 pri súťaži ILSVR(ImageNet), no stále patrí medzi často používané modely.
 
 Model sa učí hierarchické reprezentácie dát v obrázkoch prostredníctvom viacerých konvolučných vrstiev a pooling operácii. 
 Model začína niekoľkými konvolučnými vrstvami, ktoré na vstupný obraz aplikujú viacero filtrov a efektívne zisťujú rôzne funkcie obrazu, ako napríklad hrany, textúry a časti objektov.
@@ -131,18 +135,61 @@ Architektúra:
 - Konvolučná vrstva 13 (512 filtre, 3x3 jadro, ReLU aktivácia, padding=1)
 - MaxPooling vrstva (2x2 pooling)
 
+#### ResNet
+
+ResNet (Residual Network) je architektúra hlbokých neurónových sietí, ktorá bola predstavená v roku 2015 spoločnosťou Microsoft Research.
+Je navrhnutá tak, aby riešila problém miznúceho gradientu, ktorý sa vyskytuje pri trénovaní veľmi hlbokých neurónových sietí.
+ResNet toho dosahuje pomocou reziduálnych spojení, ktoré umožňujú informácií prechádzať medzi vrstvami bez toho, aby boli modifikované. To pomáha zabezpečiť, že informácie o gradientoch nezmiznú, keď sa šíria sieťou, čím umožňuje trénovať veľmi hlboké neurónové siete so stovkami alebo dokonca tisícami vrstiev.
+Základným stavebným blokom architektúry ResNet je reziduálny blok, ktorý pozostáva z dvoch alebo viacerých konvolučných vrstiev s priamejším spojením.
+Priame spojenie obchádza konvolučné vrstvy a vstup pridáva priamo k výstupu bloku, čím sa sieť učí reziduálne funkcie namiesto pôvodného mapovania.
+To uľahčuje trénovanie veľmi hlbokých sietí a zlepšuje ich presnosť.
+ResNet tiež používa vrstvy normalizácie dávok a aktivačné funkcie ReLU na stabilizáciu učenia a zavedenie nelinearity. Zvyčajne sa končí globálnou vrstvou priemerového zhlukovania, nasledovanou jednou alebo viacerými plne prepojenými vrstvami a softmax vrstvou pre klasifikáciu.
+Tieto posledné vrstvy sú však v tomto prípade odstránené aby bol výstupom siete vektor rysov daného obrázku.
+
+
+Architektúra:
+
+- Vstupná vrstva
+- Konvolučná vrstva - Táto vrstva aplikuje konvolúciu na vstupný obraz a extrahuje z neho vlastnosti.
+- Vrstva normalizácie dávok - Táto vrstva normalizuje výstup z predchádzajúcej vrstvy, aby stabilizovala proces učenia.
+- Aktivačná vrstva - Táto vrstva aplikuje aktivačnú funkciu (ako napr. ReLU) na výstup z predchádzajúcej vrstvy a zavádza nelinearitu.
+- Reziduálny blok - Tento blok je kľúčovou súčasťou architektúry ResNet a pozostáva z dvoch alebo viacerých konvolučných vrstiev s priamejším spojením. Priame spojenie obchádza konvolučné vrstvy a vstup pridáva priamo k výstupu bloku. To pomáha prekonať problém miznúceho gradientu a umožňuje trénovať veľmi hlboké neurónové siete.
+- Vrstva globálneho priemerového zhlukovania - Táto vrstva vykonáva priemerové zhlukovanie cez vlastnosti a vracia jeden vlastnostný vektor pre každý kanál.
+- (X) Plne prepojená vrstva - Táto vrstva vykonáva finálnu klasifikáciu pomocou extrahovaných vlastností z predchádzajúcich vrstiev.
+- (X) Softmax vrstva - Táto vrstva prevedie výstup z finálnej plne prepojenej vrstvy na pravdepodobnostné rozdelenie pre rôzne triedy.
+
+Počet konvolučných vrstiev a reziduálnych blokov sa môže líšiť v závislosti od konkrétnej architektúry ResNet (ResNet50, ResNet101...).
+
+
 
 ### Vnorenie slov (word embedding)
 
-Vektory sú generované pomocou Universal Sentence Encoder.
+#### Universal Sentence Encoder
+
 Model USE je postavený na architektúre Transformer a používa multi-head self-attention ako hlavný mechanizmus na získavanie informácií z danej vety.
 Multi-head self-attention umožňuje modelu vyhľadávať informácie z celej vety v rovnakom čase a zohľadniť tieto informácie pri určovaní vektoru reprezentujúceho danú vetu.
 USE tiež využíva techniku pred-trénovania na veľkých korpusoch textov, čo mu umožňuje získať širšie pochopenie jazyka a jeho kontextu.
 Výsledkom je vektorová reprezentácia, ktorá zachováva významové vlastnosti daného textu.
 
+#### Bert
+
+Bert (Bidirectional Encoder Representations from Transformers) je architektúra modelu neurónovej siete pre prirodzené jazykové spracovanie (NLP), ktorú vytvorila spoločnosť Google v roku 2018.
+Model je založený na architektúre transformátorov a používa bi-direkcionálne kódovanie, čo znamená, že model dokáže spracovať celú sekvenciu slov a učiť sa vzťahy medzi slovami v oboch smeroch.
+To umožňuje modelu porozumieť kontextu a zlepšiť presnosť jazykových modelov.
+Bert používa viacvrstvovú neurónovú sieť, ktorá obsahuje 12 alebo 24 transformátorových blokov v závislosti od veľkosti modelu.
+Každý transformátorový blok pozostáva z viacerých vrstiev neurónov, ktoré sa postupne spracúvajú.
+Každá vrstva obsahuje multi-head self-attention mechanizmus a viacvrstvové perceptróny (feedforward) siete.
+Bert má dva hlavné trénovacie ciele: masked language modeling (MLM) a predikciu ďalšieho slova (next sentence prediction).
+Pri MLM sa náhodne zakryjú niektoré slová vstupnej sekvencie a model sa učí predikovať tieto slová na základe kontextu.
+Pri predikcii ďalšieho slova sa model učí rozpoznávať, či sú dve vstupné vety navzájom súvisiace alebo nie.
+Bert sa používa na rôzne NLP úlohy, vrátane klasifikácie textu, poimenovania entít, parafraza textov a prekladu jazykov.
+Tento model dosiahol výrazné zlepšenie výkonu pre mnohé z týchto úloh a stále sa používa v najnovších výskumných prácach a aplikáciách v oblasti NLP.
+
+
 Word embeddings majú viacero výhod oproti iným technikám na reprezentáciu slov, ako napríklad one-hot encoding alebo bag-of-words modely.
 Word embeddings používajú tzv. husté (dense) vektory, čo znamená, že zachytávajú viac informácií v menšom počte dimenzií.
 Taktiež, môžu zachytiť sémantické vzťahy medzi slovami, čo je užitočné pre porovnávanie s obrázkami.
+
 
 ### Predikcia podobnosti
 
