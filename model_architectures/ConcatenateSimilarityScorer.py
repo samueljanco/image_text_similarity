@@ -16,7 +16,7 @@ class ConcatenateSimilarityScorer(SimilarityScorer):
 
         x1 = Dense(256, activation='relu')(image_input)
         x2 = Dense(256, activation='relu')(text_input)
-        x = keras.layers.multiply([x1, x2])
+        x = keras.layers.concatenate([x1, x2])
         x = keras.layers.Dense(128, activation='relu')(x)
         outputs = keras.layers.Dense(1, activation='linear')(x)
 
