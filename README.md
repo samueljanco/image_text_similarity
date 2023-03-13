@@ -92,14 +92,22 @@ Pri trénovaní modelu je použitá iba "SITS" (semantic image-text similarity) 
 Model je trénovaný na približne 80 tisíc z týchto párov.
 Zvyšok dát je použitý na následné testovanie. 
 
+Linky na sťiahnutie.
+
+Crisscrossed Captions:
+
+https://github.com/google-research-datasets/Crisscrossed-Captions
+
+MS-COCO: 
+
+https://archive.org/details/MSCoco2014
+
 
 ## Modely 
 
 ### Generovanie obrazových rysov
 
 #### VGG16
-
-?? Obrazové rysy sa zo vstupných obrázkov generujú pomocou modelu VGG16.
 
 Ide o konvolučnú neurónovú sieť, ktorá vznikla v roku 2014 pri súťaži ILSVR(ImageNet), no stále patrí medzi často používané modely.
 
@@ -161,7 +169,6 @@ Architektúra:
 Počet konvolučných vrstiev a reziduálnych blokov sa môže líšiť v závislosti od konkrétnej architektúry ResNet (ResNet50, ResNet101...).
 
 
-
 ### Vnorenie slov (word embedding)
 
 #### Universal Sentence Encoder
@@ -193,25 +200,79 @@ Taktiež, môžu zachytiť sémantické vzťahy medzi slovami, čo je užitočn�
 
 ### Predikcia podobnosti
 
-Model na predikciu podobnosti zakódovaných obrázkov a textov je neurónová sieť navrhnutá pomocou knižnice TensorFlow/Keras.
-Tento model má dva vstupy, jeden vstup pre vektor obrazových rysov (4096 dimenzií) a druhý pre vektorovú reprezentáciu textu (512 dimenzií).
+Modely na predikciu podobnosti zakódovaných obrázkov a textov sú neurónové siete navrhnuté pomocou knižnice TensorFlow/Keras.
+Tieto modely majú dva vstupy, jeden vstup pre vektor obrazových rysov a druhý pre vektorovú reprezentáciu textu.
 Pre oba vstupy nasledujú Dense vrstvy s ReLU aktiváciou.
-Po Dense vrstvách sú výstupy spojené pomocou operácie násobenia (element-wise multiplication) v capstone vrstve multipy.
+Modely sú odlišné v spôsobe spájania výstupov z obrazových a textových vrstiev.
+
+**a) Multiply** 
+Po Dense vrstvách sú výstupy spojené pomocou operácie násobenia (element-wise multiplication) vo vrstve multipy.
 Tieto výstupy sú ďalej spracované pomocou ďalšej vrstvy Dense a výstup z tejto vrstvy je následne odoslaný do poslednej vrstvy s jedným výstupom a lineárnou aktiváciou.
+
+**b) Add**
+Po Dense vrstvách sú výstupy spojené pomocou operácie sčítania (element-wise addition) vo vrstve add.
+Tieto výstupy sú ďalej spracované pomocou ďalšej vrstvy Dense a výstup z tejto vrstvy je následne odoslaný do poslednej vrstvy s jedným výstupom a lineárnou aktiváciou.
+
+**a) Concatenate**  
+Po Dense vrstvách sa používajú Dense vrstvy s aktiváciou ReLu a počtom neurónov 256 pre každý z týchto vstupných kanálov.
+Tieto dve vrstvy sú následne spojené do jednej vrstvy pomocou funkcie concatenate a výsledný vektor je vstupom do ďalšej Dense vrstvy s aktiváciou ReLu a počtom neurónov 128.
+Výstupom z tejto vrstvy je posledná Dense vrstva s aktiváciou Linear a počtom neurónov 1, ktorá určuje výstup modelu.
+
+
 Celý model je nakoniec zostrojený pomocou triedy Model z Kerasu, ktorá využíva funkcionálne API a je skompilovaný s Adam optimizérom a stratovou funkciou Mean Squared Error.
+
+## Experimenty
+
+Pri určovaní najlepšieho modelu pre predikciu podobnosti obrázkov a textov bolo natrénovaných 12 modelov.
+Tieto modely kombinujú rôzne spôsoby extrahovania rysov z obrázkov a textov a taktiež rôzne spôsoby ich následnej kombinácie.
+Pre generovanie obrazových rysov boli použité modely VGG16 a ResNet a vektorová reprezentácia textu bola vytvorená pomocou modelov Bert a Universal Sentence Encoder.
+Spájanie týchto dvoch vstupov následne prebiehalo troma spôsobmi a to sčítaním, násobením alebo konkatenáciou.
+Architektúry všetkých spomenutých komponentov sú popísané v predchádzajúcej časti.
+Každý z modelov bol trénovaný v 50-tich epochách na viac ako 80-tisíc pároch z dátasetu Crisscrossed Captions.
+Následne boli modely testované na 8000 nových pároch z rovnakého dátasetu, pričom ako stratová funkcia bola použitá 'mean_squared_error'.
+Výsledky testov sú uvedené v nasledujúcej tabuľke.
+
+| Model                   | MSE      |
+| ---                     | ---      |
+| ResNet-Bert-Add         | 2.0136   |
+| ResNet-Bert-Concatenate | 1.9626   |
+| ResNet-Bert-Multiply    | 1.9676   |
+| ResNet-USE-Add          | 2.1296   |
+| ResNet-USE-Concatenate  | 2.2795   |
+| **ResNet-USE-Multiply**     | **1.5904**   |
+| VGG16-Bert-Add          | 1.9674   |
+| VGG16-Bert-Concatenate  | 2.0012   |
+| VGG16-Bert-Multiply     | 1.9758   |
+| VGG16-USE-Add           | 2.2469   |
+| VGG16-USE-Concatenate   | 2.2195   |
+| VGG16-USE-Multiply      | 1.7551   |
+
+Najlepší výsledok dosiahol pri testovaní model **ResNet-USE-Multiply**.
+Môžeme pozorovať ako značne vplýva spôsob kombinácie rysov obrázku a textu na výslednú silu modelu.
+Zatiaľ čo pri kombinácií pomocou sčítania alebo konkatenácie mali modely ResNet-USE a VGG16-USE najhoršie výsledky zo všetkých testovaných modelov, pri kombinácii pomocou násobenia dosahovali tie najlepšie.
+Textový model USE sa v kombinácií s oboma obrazovými modelmi osvedčil ako lepšia možnosť (pri zvolení správnej kombinácie rysov), keď v spojení s ResNetom dosiahol úplne najlepší výsledok 1.5904 a skombinovaný s VGG16 mu patrí druhé miesto výsledkom 1.7551.
+Čo sa týka modelov generujúcich obrazové rysy sa celkovo ako silnejší ukázal model ResNet, keďže vo väčšine kombinácií dosiahol lepšie výsledky ako jeho konkurencia VGG16.
+
+Následne bol ešte najlepší z modelov **ResNet-USE-Multiply** trénovaný na rôznych počtoch epoch. Tu mal najlepší výsledok model trénovnay na 50-tich epochách. 
+
+| Počet epoch | MSE |
+| --- | --- |
+| 40 | 1.6039 |
+| 50 | 1.5904 | 
+| 70 | 1.6740 |
+| 100 | 1.7163 | 
 
 
 ## Implementácia
 
 ### ImageEncoder
 
-Trieda ImageEncoder používa pred-trénovaný model VGG16 na extrakciu rysov z vstupných obrázkov.
-Pri inicializácií trieda načíta model VGG16 pred-trénovaný na datasete ImageNet a vytvorí nový model typu Sequential, ktorý sa skladá zo všetkých vrstiev s výnimkou poslednej klasifikačnej vrstvy.
+Trieda ImageEncoder používa pred-trénovaný model ResNet na extrakciu rysov z vstupných obrázkov.
+Pri inicializácií trieda načíta model ResNet pred-trénovaný na datasete ImageNet , ktorý sa skladá zo všetkých vrstiev s výnimkou poslednej klasifikačnej vrstvy.
 Tento nový model sa potom uloží ako atribút triedy z názvom "model".
 
 Metóda "encode" prijíma zoznam vstupných obrázkov, načíta každý obrázok pomocou metódy load_img z Keras, zmenší ho na (224, 224) a prevedie na numpy pole.
-Numpy pole sa potom predspracuje pomocou funkcie preprocess_input modelu VGG16 a predá sa do pred-trénovaného modelu VGG16 na extrakciu rysov.
-Extrahované rysy sa potom preformátujú a uložia sa do zoznamu.
+Predspracované obrázky sa uložia do zoznamu a nasledne sa z nich pomocou modelu vygeneruju obrazové rysy.
 Nakoniec, metóda vráti numpy pole všetkých extrahovaných rysov zo vstupných obrázkov.
 Trieda je užitočná pre ďalšie triedy, ktoré potrebujú zakódovať obrazové vstupy do vektorového priestoru pre ďalšie spracovanie, ako napríklad trieda SimilarityScore.
 
@@ -255,9 +316,10 @@ Potom načíta CSV súbor a pridáva rysy obrázkov, rysy textov a ich cieľové
 Nakoniec funkcia vráti zoznamy ako polia numpy.
 
 
-**[train] build_model()**
+**[train] build_model(combine_via)**
 
-Funkcia zostrojí a skompiluje model, ktorý sa bude trénovať. 
+Funkcia zostrojí a skompiluje model, ktorý sa bude trénovať.
+Parameter combine_via určí spôsob spájania obrazových a textových rysov.
 
 
 **[train] main(args)**
@@ -286,5 +348,9 @@ Trieda tiež vytvára textové pole, tlačidlo "Select Image", pole pre obrázok
 Tlačidlo "Compere" spúšťa metódu compare, ktorá získava text z textového poľa a porovnáva ho so zvoleným obrázkom pomocou objektu SimilarityScore. Ak sú zadané text aj obrázok, zobrazí sa ako vyskakovacie okno s výslednou podobnosťou.
 
 Metóda "popUpEvent" používa triedu "QMessageBox" na vytvorenie vyskakovacieho okna, ktoré zobrazuje výsledok ako informačnú správu.
+
+## Záver
+
+Výsledkom projektu je desktopová aplikácia napísaná v jazyku Python, pomocou ktorej môže používateľ určiť mieru podobnosti medzi obrázkami a textom. Aplikácia na tento účel využíva model umelej inteligencie, konkrétnejšie neurónovú sieť natrénovanú na rozšírení dátasetu MS-COCO s názvom Crisscrossed Captions. Model bol vybraný s 12 testovaných variant, medzi ktorými sa ukázal ako najsilnejší.
 
 
