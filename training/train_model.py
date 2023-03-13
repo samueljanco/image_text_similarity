@@ -24,13 +24,19 @@ def transform_to_dictionary(arr):
         dict[str(int(i[0]))] = i[1:]
     return dict
 
-def build_model():
+def build_model(combine_via = 'multiply'):
     image_input = Input(shape=(4096,))
     text_input = Input(shape=(512,))
 
     x1 = Dense(256, activation='relu')(image_input)
     x2 = Dense(256, activation='relu')(text_input)
-    x = keras.layers.multiply([x1, x2])
+    if combine_via == 'multiply':
+        x = keras.layers.multiply([x1, x2])
+    elif combine_via == 'add':
+        x = keras.layers.add([x1, x2])
+    else:
+        x = keras.layers.concatenate([x1, x2])
+        
     x = keras.layers.Dense(128, activation='relu')(x)
     outputs = keras.layers.Dense(1, activation='linear')(x)
 
