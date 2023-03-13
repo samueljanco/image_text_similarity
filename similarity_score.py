@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import keras.models
 from tensorflow import keras
-from image_features import ImageEncoder
-from text_features import TextEncoder
+from ImageEncoder import ImageEncoder
+from TextEncoder import TextEncoder
 
 class SimilarityScore:
     def __init__(self):
